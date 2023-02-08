@@ -1,38 +1,62 @@
-const mongoose = require('mongoose')
-
+const mongoose = require("mongoose");
+const Admin = require("../../model/Staff/Admin");
 
 //Desc Register controller
 //@route POST /api/v1/admin/register
 //@access Private
-exports.registerAdminCtrl = async (req,res) => {
-    try {
-        res.status(200).json({
-          status: "Success",
-          data: "Admin has been registered",
-        });
-      } catch (error) {
-        res.status(500).json({
-          status: "Failed",
-          error: Error.message,
-        });
-      }
-} 
+exports.registerAdminCtrl = async (req, res) => {
+  const { name, email, password } = req.body;
+  try {
+    //checking if email exit
+    const userFound = await Admin.findOne({ email });
+    if (userFound) {
+      return res.json({ message: "Admin Exited" });
+    }
+    //register
+    const user = await Admin.create({
+      email,
+      password,
+      name,
+    });
+    res.status(201).json({
+      status: "Success",
+      data: user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "Failed",
+      error: Error.message,
+    });
+  }
+};
 
 //Desc Login controller
 //@route POST /api/v1/admin/login
 //@access Private
 exports.loginAdminCtrl = async (req, res) => {
+  const { email, password } = req.body;
   try {
-    res.status(201).json({
-      status: "Success",
-      data: "Admin has been Login ",
-    });
+    const user = await Admin.findOne({ email });
+    if (!user) {
+      return res.json({
+        message: "User Not Found"
+      });
+    }
+    if (user && (await user.verifyPassword(password))) {
+      return res.json({
+        user,
+      });
+    } else {
+      return res.json({
+        message: "Invalid Login crendetial",
+      });
+    }
   } catch (error) {
     res.status(500).json({
       error: error.message,
     });
   }
-} 
+};
 
 //Desc Get Admins  controller
 //@route GET /api/v1/admin/
@@ -48,7 +72,7 @@ exports.getAdmins = async (req, res) => {
       error: error.message,
     });
   }
-}
+};
 //Desc Get Single Admin  controller
 //@route GET /api/v1/admin/:adminID
 //@access Private
@@ -64,7 +88,7 @@ exports.getSingleAdmin = async (req, res) => {
       error: error.message,
     });
   }
-}
+};
 
 //Desc Update Admin  controller
 //@route PUT /api/v1/admin/:adminID
@@ -81,7 +105,7 @@ exports.updateAdmin = async (req, res) => {
       error: error.message,
     });
   }
-}
+};
 //Desc Delete Admin  controller
 //@route DELETE /api/v1/admin/:adminID
 //@access Private
@@ -97,12 +121,12 @@ exports.deleteAdmin = async (req, res) => {
       error: error.message,
     });
   }
-}
+};
 
 //Desc Admin Suspend Teacher controller
 //@route PUT /api/v1/suspend/teacher/:Id
 //@access Private
-exports.suspendTeacher = async  (req, res) => {
+exports.suspendTeacher = async (req, res) => {
   try {
     res.status(201).json({
       status: "success",
@@ -114,11 +138,11 @@ exports.suspendTeacher = async  (req, res) => {
       error: error.message,
     });
   }
-}
+};
 //Desc Admin Unsuspend Teacher controller
 //@route PUT /api/v1/unsuspend/teacher/:Id
 //@access Private
-exports.unsuspendTeacher = async  (req, res) => {
+exports.unsuspendTeacher = async (req, res) => {
   try {
     res.status(201).json({
       status: "success",
@@ -130,7 +154,7 @@ exports.unsuspendTeacher = async  (req, res) => {
       error: error.message,
     });
   }
-}
+};
 
 //Desc Admin Withdraw Teacher controller
 //@route PUT /api/v1/withdraw/teacher/:Id
@@ -147,7 +171,7 @@ exports.withdrawTeacher = async (req, res) => {
       error: error.message,
     });
   }
-}
+};
 
 //Desc Admin Unwithdraw Teacher controller
 //@route PUT /api/v1/unwithdraw/teacher/:Id
@@ -164,7 +188,7 @@ exports.unwithdrawTeacher = async (req, res) => {
       error: error.message,
     });
   }
-}
+};
 
 //Desc Admin Public Exam controller
 //@route PUT /api/v1/unpublish/exam/:Id
@@ -181,16 +205,16 @@ exports.publisheExam = async (req, res) => {
       error: error.message,
     });
   }
-}
+};
 
 //Desc Admin Public Exam controller
 //@route PUT /api/v1/unpublish/exam/:Id
 //@access Private
-exports.unpublishExam = async  (req, res) => {
+exports.unpublishExam = async (req, res) => {
   try {
     res.status(201).json({
       status: "success",
-      data: "Admins uunpublish exam",
+      data: "Admins unpublish exam",
     });
   } catch (error) {
     res.status(500).json({
@@ -198,4 +222,4 @@ exports.unpublishExam = async  (req, res) => {
       error: error.message,
     });
   }
-}
+};

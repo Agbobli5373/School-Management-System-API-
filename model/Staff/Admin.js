@@ -67,6 +67,21 @@ const adminSchema = new mongoose.Schema(
   }
 );
 
+//hash password
+adminSchema.pre('save',  async function (next) {
+    if(!this.isModified('password')){
+      next();
+    }
+    //salt
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password,salt)
+    next();
+})
+
+//verify password
+adminSchema.methods.verifyPassword = async function(enterPassword){
+     return await bcrypt.compare(enterPassword ,this.password)     
+}
 //model
 const Admin = mongoose.model("Admin", adminSchema);
 

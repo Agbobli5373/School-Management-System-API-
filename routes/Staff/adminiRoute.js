@@ -6,6 +6,8 @@ const {registerAdminCtrl,loginAdminCtrl,getAdmins,
        suspendTeacher, unsuspendTeacher, withdrawTeacher,
        unwithdrawTeacher, publisheExam, unpublishExam } = require('../../controller/Staff/adminCtrl')
 
+
+
 //register
 adminRouter.post("/register", registerAdminCtrl);
 
