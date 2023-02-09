@@ -4,7 +4,6 @@ const AsyncHandler = require("express-async-handler");
 const generateToken = require("../../utils/generateToken");
 const verifyToken = require("../../utils/verifyToken");
 
-
 //Desc Register controller
 //@route POST /api/v1/admin/register
 //@access Private
@@ -76,16 +75,13 @@ exports.getAdmins = async (req, res) => {
 //Desc Get Single Admin  controller
 //@route GET /api/v1/admin/:adminID
 //@access Private
-exports.getSingleAdmin = AsyncHandler(
-  async ( req, res ) => {
-      console.log(req.useAuth)
-      res.status(201).json({
-        status: "success",
-        data: "Single Admins",
-    
-      });
-    }
-)
+exports.getSingleAdmin = AsyncHandler(async (req, res) => {
+  console.log(req.useAuth);
+  res.status(201).json({
+    status: "success",
+    data: "Single Admins",
+  });
+});
 
 //Desc Update Admin  controller
 //@route PUT /api/v1/admin/:adminID
