@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 const Admin = require("../../model/Staff/Admin");
 const AsyncHandler = require("express-async-handler");
-const generateToken = require('../../utils/generateToken')
+const generateToken = require("../../utils/generateToken");
+const verifyToken = require("../../utils/verifyToken");
+
 
 //Desc Register controller
 //@route POST /api/v1/admin/register
@@ -12,7 +14,7 @@ exports.registerAdminCtrl = AsyncHandler(async (req, res) => {
   const userFound = await Admin.findOne({ email });
   if (userFound) {
     //return res.json({ message: "Admin Exited" });
-    throw new Error ("Admins Exits");
+    throw new Error("Admins Exits");
   }
   //register
   const user = await Admin.create({
@@ -39,8 +41,15 @@ exports.loginAdminCtrl = AsyncHandler(async (req, res) => {
     });
   }
   if (user && (await user.verifyPassword(password))) {
+    //assigning generated token
+    const token = generateToken(user._id);
+    // verifying token
+    const verify = verifyToken(token);
+    console.log(verify);
     return res.json({
-    data : generateToken(user.id)
+      data: generateToken(user._id),
+      user,
+      verify,
     });
   } else {
     return res.json({
@@ -67,19 +76,16 @@ exports.getAdmins = async (req, res) => {
 //Desc Get Single Admin  controller
 //@route GET /api/v1/admin/:adminID
 //@access Private
-exports.getSingleAdmin = async (req, res) => {
-  try {
-    res.status(201).json({
-      status: "success",
-      data: "Single Admins",
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: "failed",
-      error: error.message,
-    });
-  }
-};
+exports.getSingleAdmin = AsyncHandler(
+  async ( req, res ) => {
+      console.log(req.useAuth)
+      res.status(201).json({
+        status: "success",
+        data: "Single Admins",
+    
+      });
+    }
+)
 
 //Desc Update Admin  controller
 //@route PUT /api/v1/admin/:adminID

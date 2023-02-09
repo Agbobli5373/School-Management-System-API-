@@ -1,4 +1,5 @@
 const express = require("express");
+const isLogin = require("../../middlewares/isLogin") ;
 const adminRouter = express.Router();
 
 const {registerAdminCtrl,loginAdminCtrl,getAdmins, 
@@ -18,7 +19,7 @@ adminRouter.post("/login", loginAdminCtrl);
 adminRouter.get("",getAdmins );
 
 //get single admin
-adminRouter.get("/:adminID", getSingleAdmin);
+adminRouter.get("/:adminID", isLogin, getSingleAdmin);
 
 //update admin
 adminRouter.put("/:adminID", updateAdmin);
