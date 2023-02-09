@@ -1,62 +1,53 @@
 const mongoose = require("mongoose");
 const Admin = require("../../model/Staff/Admin");
+const AsyncHandler = require("express-async-handler");
+const generateToken = require('../../utils/generateToken')
 
 //Desc Register controller
 //@route POST /api/v1/admin/register
 //@access Private
-exports.registerAdminCtrl = async (req, res) => {
+exports.registerAdminCtrl = AsyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
-  try {
-    //checking if email exit
-    const userFound = await Admin.findOne({ email });
-    if (userFound) {
-      return res.json({ message: "Admin Exited" });
-    }
-    //register
-    const user = await Admin.create({
-      email,
-      password,
-      name,
-    });
-    res.status(201).json({
-      status: "Success",
-      data: user,
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: "Failed",
-      error: Error.message,
-    });
+  //checking if email exit
+  const userFound = await Admin.findOne({ email });
+  if (userFound) {
+    //return res.json({ message: "Admin Exited" });
+    throw new Error ("Admins Exits");
   }
-};
+  //register
+  const user = await Admin.create({
+    email,
+    password,
+    name,
+  });
+  res.status(201).json({
+    status: "Success",
+    data: user,
+  });
+});
 
 //Desc Login controller
 //@route POST /api/v1/admin/login
 //@access Private
-exports.loginAdminCtrl = async (req, res) => {
+exports.loginAdminCtrl = AsyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  try {
-    const user = await Admin.findOne({ email });
-    if (!user) {
-      return res.json({
-        message: "User Not Found"
-      });
-    }
-    if (user && (await user.verifyPassword(password))) {
-      return res.json({
-        user,
-      });
-    } else {
-      return res.json({
-        message: "Invalid Login crendetial",
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      error: error.message,
+  //checking if email exit
+  const user = await Admin.findOne({ email });
+  if (!user) {
+    return res.json({
+      message: "Invalid Login crendetial",
     });
   }
-};
+  if (user && (await user.verifyPassword(password))) {
+    return res.json({
+    data : generateToken(user.id)
+    });
+  } else {
+    return res.json({
+      message: "Invalid Login crendetial",
+    });
+  }
+});
 
 //Desc Get Admins  controller
 //@route GET /api/v1/admin/
