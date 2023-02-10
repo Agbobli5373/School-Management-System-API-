@@ -4,8 +4,8 @@ const Admin = require("../model/Staff/Admin");
 const isLogin = async (req, res, next) => {
   //get token from header
   const headerObject = req.headers;
-  const token = headerObject.authorization.split(" ")[1];
-  console.log(token);
+  const token = headerObject?.authorization?.split(" ")[1];
+  //console.log(token);
   //verify token
   const verifiedToken = verifyToken(token);
   if (verifiedToken) {
@@ -14,9 +14,11 @@ const isLogin = async (req, res, next) => {
     );
     //save the user into req.body
     req.useAuth = user;
-    next();
+    next()
+   
   } else {
     const err = new Error("Token Expired");
+    next(err);
   }
 };
 

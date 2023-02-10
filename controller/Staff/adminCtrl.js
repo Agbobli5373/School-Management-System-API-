@@ -3,6 +3,7 @@ const Admin = require("../../model/Staff/Admin");
 const AsyncHandler = require("express-async-handler");
 const generateToken = require("../../utils/generateToken");
 const verifyToken = require("../../utils/verifyToken");
+const { findById } = require("../../model/Staff/Admin");
 
 //Desc Register controller
 //@route POST /api/v1/admin/register
@@ -60,27 +61,35 @@ exports.loginAdminCtrl = AsyncHandler(async (req, res) => {
 //Desc Get Admins  controller
 //@route GET /api/v1/admin/
 //@access Private
-exports.getAdmins = async (req, res) => {
-  try {
+exports.getAdmins = AsyncHandler(async (req, res) => {
+  const admins = await Admin.find().select(
+    "-password -createdAt -updatedAt"
+  );
+  res.status(200).json({
+    status: "success",
+    message : "Admins fetched successfully",
+    data : admins
+  });
+});
+//Desc Get Get Admin Profile  controller
+//@route GET /api/v1/admin/profile
+//@access Private
+exports.getAdminProfile = AsyncHandler(async (req, res) => {
+  //console.log(req.useAuth);
+  const user = await Admin.findById(req.useAuth._id).select(
+    "-password -createdAt -updatedAt"
+  );
+  if (!user) {
+    res.status(404).json({
+      message: "Admin Not found",
+    });
+  } else {
     res.status(200).json({
       status: "Success",
-      data: "All Admins ",
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: error.message,
+      message : "Admin fetched successfully",
+      data : user,
     });
   }
-};
-//Desc Get Single Admin  controller
-//@route GET /api/v1/admin/:adminID
-//@access Private
-exports.getSingleAdmin = AsyncHandler(async (req, res) => {
-  console.log(req.useAuth);
-  res.status(201).json({
-    status: "success",
-    data: "Single Admins",
-  });
 });
 
 //Desc Update Admin  controller
