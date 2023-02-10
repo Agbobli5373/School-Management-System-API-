@@ -3,7 +3,8 @@ const Admin = require("../../model/Staff/Admin");
 const AsyncHandler = require("express-async-handler");
 const generateToken = require("../../utils/generateToken");
 const verifyToken = require("../../utils/verifyToken");
-const { findById } = require("../../model/Staff/Admin");
+const bcrypt = require('bcryptjs');
+const { json } = require("body-parser");
 
 //Desc Register controller
 //@route POST /api/v1/admin/register
@@ -11,15 +12,19 @@ const { findById } = require("../../model/Staff/Admin");
 exports.registerAdminCtrl = AsyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
   //checking if email exit
+
   const userFound = await Admin.findOne({ email });
   if (userFound) {
     //return res.json({ message: "Admin Exited" });
     throw new Error("Admins Exits");
   }
+   //hashing password
+  const salt = await bcrypt.genSalt(10);
+  passwordhashed = await bcrypt.hash(password,salt);
   //register
   const user = await Admin.create({
     email,
-    password,
+    password : passwordhashed,
     name,
   });
   res.status(201).json({
@@ -35,40 +40,35 @@ exports.loginAdminCtrl = AsyncHandler(async (req, res) => {
   const { email, password } = req.body;
   //checking if email exit
   const user = await Admin.findOne({ email });
+ 
   if (!user) {
     return res.json({
       message: "Invalid Login crendetial",
     });
   }
-  if (user && (await user.verifyPassword(password))) {
-    //assigning generated token
-    const token = generateToken(user._id);
-    // verifying token
-    const verify = verifyToken(token);
-    console.log(verify);
+  //verifying password 
+  const isMatch = await bcrypt.compare(password ,user.password) ;
+  console.log(isMatch)
+  if(!isMatch){
+    return res.json({message :"Invalid Credential"})
+  }
+   else {
     return res.json({
       data: generateToken(user._id),
-      user,
-      verify,
+      message : "Admin Logged successfully"
     });
-  } else {
-    return res.json({
-      message: "Invalid Login crendetial",
-    });
-  }
+  } 
 });
 
 //Desc Get Admins  controller
 //@route GET /api/v1/admin/
 //@access Private
 exports.getAdmins = AsyncHandler(async (req, res) => {
-  const admins = await Admin.find().select(
-    "-password -createdAt -updatedAt"
-  );
+  const admins = await Admin.find().select("-password -createdAt -updatedAt");
   res.status(200).json({
     status: "success",
-    message : "Admins fetched successfully",
-    data : admins
+    message: "Admins fetched successfully",
+    data: admins,
   });
 });
 //Desc Get Get Admin Profile  controller
@@ -86,8 +86,8 @@ exports.getAdminProfile = AsyncHandler(async (req, res) => {
   } else {
     res.status(200).json({
       status: "Success",
-      message : "Admin fetched successfully",
-      data : user,
+      message: "Admin fetched successfully",
+      data: user,
     });
   }
 });
@@ -95,19 +95,35 @@ exports.getAdminProfile = AsyncHandler(async (req, res) => {
 //Desc Update Admin  controller
 //@route PUT /api/v1/admin/:adminID
 //@access Private
-exports.updateAdmin = async (req, res) => {
-  try {
-    res.status(201).json({
+exports.updateAdmin = AsyncHandler(async (req, res) => {
+  const { email, name, password } = req.body;
+  //checking if admin user exit
+  //const adminFound = await Admin.findById(useAuth._id);
+  //checking if email used
+  const emailExit = await Admin.findOne({ email });
+  console.log(emailExit);
+  if (emailExit) {
+    throw new Error("Email already taken");
+  } else {
+    const admin = await Admin.findByIdAndUpdate(
+      req.useAuth._id,
+      {
+        email,
+        name,
+        password,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    res.status(200).json({
       status: "success",
-      data: "Update Admins",
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: "failed",
-      error: error.message,
+      message: "Admin Updated Successfull",
+      data: admin,
     });
   }
-};
+});
 //Desc Delete Admin  controller
 //@route DELETE /api/v1/admin/:adminID
 //@access Private
