@@ -1,10 +1,8 @@
-const mongoose = require("mongoose");
 const Admin = require("../../model/Staff/Admin");
 const AsyncHandler = require("express-async-handler");
 const generateToken = require("../../utils/generateToken");
 const verifyToken = require("../../utils/verifyToken");
-const bcrypt = require('bcryptjs');
-const { json } = require("body-parser");
+const {hashPassword,verifyPassword}  = require("../../utils/helper")
 
 //Desc Register controller
 //@route POST /api/v1/admin/register
@@ -18,13 +16,11 @@ exports.registerAdminCtrl = AsyncHandler(async (req, res) => {
     //return res.json({ message: "Admin Exited" });
     throw new Error("Admins Exits");
   }
-   //hashing password
-  const salt = await bcrypt.genSalt(10);
-  passwordhashed = await bcrypt.hash(password,salt);
+  
   //register
   const user = await Admin.create({
     email,
-    password : passwordhashed,
+    password : await hashPassword(password),
     name,
   });
   res.status(201).json({
@@ -47,7 +43,7 @@ exports.loginAdminCtrl = AsyncHandler(async (req, res) => {
     });
   }
   //verifying password 
-  const isMatch = await bcrypt.compare(password ,user.password) ;
+  const isMatch = await verifyPassword(password,user.password);
   console.log(isMatch)
   if(!isMatch){
     return res.json({message :"Invalid Credential"})
@@ -110,7 +106,7 @@ exports.updateAdmin = AsyncHandler(async (req, res) => {
       {
         email,
         name,
-        password,
+        password : await hashPassword(password),
       },
       {
         new: true,
