@@ -1,8 +1,8 @@
-const { json } = require('express')
 const express = require('express')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const adminRouter = require('../routes/Staff/adminiRoute')
+const academicYrRouter = require("../routes/Accademics/academicYearRoute")
 const {errorHandler,notFound} = require('../middlewares/globalErrorHandler')
 
 const app = express()
@@ -18,6 +18,9 @@ app.use(bodyParser.json()) ;
 
 // Admin routes
 app.use('/api/v1/admins/' , adminRouter) ;
+
+//Accademic Year route
+app.use('/api/v1/academic-year/', academicYrRouter) ;
 
 //not found middleware
 app.use(notFound);
