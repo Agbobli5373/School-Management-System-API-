@@ -7,7 +7,7 @@ const Admin = require("../../model/Staff/Admin");
 //@Access private
 exports.createAcademicYrCtrl = AsyncHandler(async (req, res) => {
   const { name, fromYear, toYear } = req.body;
-  const academicYearExit = await AcademicYear.findOne({name});
+  const academicYearExit = await AcademicYear.findOne({ name });
 
   if (academicYearExit) {
     throw new Error("Acadmic Already Exit");
@@ -17,12 +17,12 @@ exports.createAcademicYrCtrl = AsyncHandler(async (req, res) => {
     name,
     fromYear,
     toYear,
-    createdBy: req.useAuth._id
+    createdBy: req.useAuth._id,
   });
-//pushing academic 
-const admin = await Admin.findById(req.useAuth._id);
-admin.academicYears.push(academicYearCreated);
-await admin.save() ;
+  //pushing academic
+  const admin = await Admin.findById(req.useAuth._id);
+  admin.academicYears.push(academicYearCreated);
+  await admin.save();
 
   res.status(201).json({
     status: "Success",
@@ -62,34 +62,37 @@ exports.updateAcademicYrCtrl = AsyncHandler(async (req, res) => {
   const { name, fromYear, toYear, isCurrent } = req.body;
 
   //checking if the acadmic year exit
-  const academicYearExit = await AcademicYear.findOne({name});
+  const academicYearExit = await AcademicYear.findOne({ name });
   if (academicYearExit) {
     throw new Error("Acadmic Already Exit");
   }
- //update
-  const academicYearUpdated =  await AcademicYear.findByIdAndUpdate(
-    req.params.id, {
-    name,
-    fromYear,
-    toYear,
-    createdBy: req.useAuth._id,
-  },
-  {
-    new : true
-  });
+  //update
+  const academicYearUpdated = await AcademicYear.findByIdAndUpdate(
+    req.params.id,
+    {
+      name,
+      fromYear,
+      toYear,
+      createdBy: req.useAuth._id,
+    },
+    {
+      new: true,
+    }
+  );
   res.status(201).json({
     status: "Success",
     message: "Academic Year updated  Successufully",
     data: academicYearUpdated,
   });
- 
 });
 
 //@Dec DELETE Accademic year controller
 //@Route DELETE /api/v1/academic-year/:id
 //@Access private
 exports.deleteAcademicYrCtrl = AsyncHandler(async (req, res) => {
- const academicYearDeleted = await AcademicYear.findByIdAndDelete(req.params.id);
+  const academicYearDeleted = await AcademicYear.findByIdAndDelete(
+    req.params.id
+  );
   res.status(201).json({
     status: "Success",
     message: `${academicYearDeleted.name} has been Academic Year Delete Successufully`,

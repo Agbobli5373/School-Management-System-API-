@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const adminRouter = require('../routes/Staff/adminiRoute')
 const academicYrRouter = require("../routes/Accademics/academicYearRoute")
+const academicTermRouter = require("../routes/Accademics/acadmicTermRoute")
 const {errorHandler,notFound} = require('../middlewares/globalErrorHandler')
 
 const app = express()
@@ -21,6 +22,9 @@ app.use('/api/v1/admins/' , adminRouter) ;
 
 //Accademic Year route
 app.use('/api/v1/academic-year/', academicYrRouter) ;
+
+//Accademic Term route
+app.use('/api/v1/academic-terms/', academicTermRouter)
 
 //not found middleware
 app.use(notFound);
