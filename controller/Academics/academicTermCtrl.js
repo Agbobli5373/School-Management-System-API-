@@ -19,9 +19,9 @@ exports.createAcademicTermCtrl = AsynHandler( async (req,res)=>{
         duration,
         createdBy : req.useAuth._id
     })
-    
+
     //pushing Accademic Term to Admin
-    const admin = Admin.findById(req.useAuth._id) ;
+    const admin = await Admin.findById(req.useAuth._id) ;
     admin.academicTerms.push(createdAcademicTerm);
     await admin.save();
 
