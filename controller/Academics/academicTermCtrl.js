@@ -1,4 +1,5 @@
 const AcademicTerm = require('../../model/Academics/AcademicTerm');
+const Admin = require("../../model/Staff/Admin") ;
 const AsynHandler = require("express-async-handler") ;
 
 //@Desc Create Academic term
@@ -18,6 +19,12 @@ exports.createAcademicTermCtrl = AsynHandler( async (req,res)=>{
         duration,
         createdBy : req.useAuth._id
     })
+    
+    //pushing Accademic Term to Admin
+    const admin = Admin.findById(req.useAuth._id) ;
+    admin.academicTerms.push(createdAcademicTerm);
+    await admin.save();
+
     res.status(201).json({
         status : 'success',
         message : "Academic Term Created Successfully",
@@ -42,8 +49,11 @@ exports.getAcademicTermCtrl = AsynHandler( async (req,res)=>{
 //@Route POST api/v1/academic-terms
 //@Access Private
 exports.getAcademicTermsCtrl = AsynHandler( async (req,res)=>{
+    const academicTerms = await AcademicTerm.find() ;
     res.status(200).json({
-        status : 'success'
+        status : 'success',
+        message : "Get Academic Terms Successfully",
+        data :academicTerms
      })
 })
 
