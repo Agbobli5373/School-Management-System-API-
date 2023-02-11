@@ -2,7 +2,7 @@
 const Admin = require('../model/Staff/Admin')
 
 const isAdmin = async (req, res, next) => {
-    const userId = req.useAuth._id;
+    const userId = req?.useAuth?._id;
     //find a user
     const userFound = await Admin.findById(userId);
     //check if is Admin

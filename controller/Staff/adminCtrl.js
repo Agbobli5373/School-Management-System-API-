@@ -74,7 +74,7 @@ exports.getAdminProfile = AsyncHandler(async (req, res) => {
   //console.log(req.useAuth);
   const user = await Admin.findById(req.useAuth._id).select(
     "-password -createdAt -updatedAt"
-  );
+  ).populate("academicYears");
   if (!user) {
     res.status(404).json({
       message: "Admin Not found",

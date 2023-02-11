@@ -19,7 +19,10 @@ exports.createAcademicYrCtrl = AsyncHandler(async (req, res) => {
     toYear,
     createdBy: req.useAuth._id
   });
- 
+//pushing academic 
+const admin = await Admin.findById(req.useAuth._id);
+admin.academicYears.push(academicYearCreated);
+await admin.save() ;
 
   res.status(201).json({
     status: "Success",
