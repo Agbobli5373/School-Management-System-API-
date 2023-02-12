@@ -9,15 +9,15 @@ const {
   deleteClassLevelCtrl,
 } = require("../../controller/Academics/classLevelCtrl");
 
-const ClassLevelRouter = express.Router();
+const classLevelRouter = express.Router();
 
-ClassLevelRouter.route("/")
+classLevelRouter.route("/")
    // create class level route
   .post(isLogin, isAdmin, createClassLevelCtrl)
   // get all class level route
   .get(isLogin, isAdmin, getClassLevelsCtrl);
 
-ClassLevelRouter.route("/:id")
+classLevelRouter.route("/:id")
    //get single class level by id route
   .get(isLogin, isAdmin, getClassLevelCtrl)
    //update class level by id route
@@ -25,4 +25,4 @@ ClassLevelRouter.route("/:id")
   //delete class level by id route
   .delete(isLogin, isAdmin, deleteClassLevelCtrl);
 
-module.exports = ClassLevelRouter
+module.exports = classLevelRouter
