@@ -35,7 +35,6 @@ exports.createAcademicTermCtrl = AsynHandler( async (req,res)=>{
 //@Desc Get Single  Academic term
 //@Route GET api/v1/academic-terms
 //@Access Private
-
 exports.getAcademicTermCtrl = AsynHandler( async (req,res)=>{
     const academicTerm = await AcademicTerm.findById(req.params.id) ;
     res.status(200).json({
@@ -61,14 +60,32 @@ exports.getAcademicTermsCtrl = AsynHandler( async (req,res)=>{
 //@Route PUT api/v1/academic-terms
 //@Access Private
 exports.updateAcademicTermCtrl = AsynHandler( async (req,res)=>{
-    
+    const {name, description ,duration} = req.body ;
+    const academicTermExit = await AcademicTerm.findOne({name});
+    if(academicTermExit){
+        throw new Error("Academic Exit Already");
+    }
+    const updatedAcademicTerm = await AcademicTerm.findByIdAndUpdate(req.params.id,{
+        name,
+        description,
+        duration,
+        createdBy: req.useAuth._id
+    });
+    res.status(201).json({
+        status : "Success",
+        message : "Academic Term Updated Successfull",
+        data : updatedAcademicTerm
+    })
 })
 
 //@Desc Delete Academic term
 //@Route POST api/v1/academic-terms
 //@Access Private
 exports.deleteAcademicTermCtrl = AsynHandler( async (req,res)=>{
+    const deletedAcademicTerm =await AcademicTerm.findByIdAndDelete(req.params.id) ;
     res.status(200).json({
-        status : 'success'
+        status : 'success',
+        message : "Academic Term Updated Successfull",
+        data : deletedAcademicTerm
      })
 })
