@@ -1,4 +1,5 @@
 const AsyncHandler = require("express-async-handler");
+const { findById } = require("../../model/Academics/AcademicTerm");
 const ClassLevel = require("../../model/Academics/ClassLevel");
 const Admin = require("../../model/Staff/Admin");
 
@@ -16,6 +17,11 @@ exports.createClassLevelCtrl =( AsyncHandler (async (req,res)=>{
         description,
         createdBy : req.use._id
     }) ;
+    //pushing class level to Admin model
+    const admin = await findById(req.useAuth._id);
+    admin.ClassLevel.push(createdClassLevel);
+    await admin.save ;
+    
     res.status(201).json({
         status : "Success",
         message : "Class Level Created Successfull",
@@ -27,10 +33,11 @@ exports.createClassLevelCtrl =( AsyncHandler (async (req,res)=>{
 //@Route GET api/v1/class-levels/:id
 //@Access Private
 exports.getClassLevelCtrl =( AsyncHandler (async (req,res)=>{
+    const classLevel = await ClassLevel.find();
     res.status(200).json({
         status : "Success",
         message : "Get single Class Level Successfull",
-        data : ""
+        data : classLevel
     })
 }))
 
