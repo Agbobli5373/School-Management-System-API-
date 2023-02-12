@@ -1,30 +1,31 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const morgan = require('morgan')
-const adminRouter = require('../routes/Staff/adminiRoute')
-const academicYrRouter = require("../routes/Accademics/academicYearRoute")
-const academicTermRouter = require("../routes/Accademics/acadmicTermRoute")
-const {errorHandler,notFound} = require('../middlewares/globalErrorHandler')
+const express = require("express");
+const bodyParser = require("body-parser");
+const morgan = require("morgan");
+const adminRouter = require("../routes/Staff/adminiRoute");
+const academicYrRouter = require("../routes/Accademics/academicYearRoute");
+const academicTermRouter = require("../routes/Accademics/acadmicTermRoute");
+const classLevelRouter = require("../routes/Accademics/classLevelRoute");
+const { errorHandler, notFound } = require("../middlewares/globalErrorHandler");
 
-const app = express()
+const app = express();
 
 //middleware
-app.use(morgan('dev'))
+app.use(morgan("dev"));
 
 //body-parser middlerware
-app.use(bodyParser.urlencoded ({ extended :false}));
-app.use(bodyParser.json()) ;
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 //app.use(express.json()) // pass json data
 
 // Admin routes
-app.use('/api/v1/admins/' , adminRouter) ;
-
+app.use("/api/v1/admins/", adminRouter);
 //Accademic Year route
-app.use('/api/v1/academic-year/', academicYrRouter) ;
-
+app.use("/api/v1/academic-year/", academicYrRouter);
 //Accademic Term route
-app.use('/api/v1/academic-terms/', academicTermRouter)
+app.use("/api/v1/academic-terms/", academicTermRouter);
+//Accademic Term route
+app.use("/api/v1/class-levels/", classLevelRouter);
 
 //not found middleware
 app.use(notFound);
@@ -32,4 +33,4 @@ app.use(notFound);
 //error middleware
 app.use(errorHandler);
 
-module.exports = app 
+module.exports = app;
