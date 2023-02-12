@@ -6,10 +6,20 @@ const Admin = require("../../model/Staff/Admin");
 //@Route POST api/v1/class-levels
 //@Access Private
 exports.createClassLevelCtrl =( AsyncHandler (async (req,res)=>{
+    const {name,description} = req.body;
+    const classLevelExit = await ClassLevel.findOne({name}) ;
+    if(classLevelExit){
+        throw new Error("Class Level already created");
+    }
+    const createdClassLevel = await ClassLevel.create({
+        name,
+        description,
+        createdBy : req.use._id
+    }) ;
     res.status(201).json({
         status : "Success",
         message : "Class Level Created Successfull",
-        data : ""
+        data : createdClassLevel
     })
 }))
 
