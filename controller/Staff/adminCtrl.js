@@ -2,7 +2,7 @@ const Admin = require("../../model/Staff/Admin");
 const AsyncHandler = require("express-async-handler");
 const generateToken = require("../../utils/generateToken");
 const verifyToken = require("../../utils/verifyToken");
-const {hashPassword,verifyPassword}  = require("../../utils/helper")
+const { hashPassword, verifyPassword } = require("../../utils/helper");
 
 //Desc Register controller
 //@route POST /api/v1/admin/register
@@ -16,11 +16,11 @@ exports.registerAdminCtrl = AsyncHandler(async (req, res) => {
     //return res.json({ message: "Admin Exited" });
     throw new Error("Admins Exits");
   }
-  
+
   //register
   const user = await Admin.create({
     email,
-    password : await hashPassword(password),
+    password: await hashPassword(password),
     name,
   });
   res.status(201).json({
@@ -36,24 +36,23 @@ exports.loginAdminCtrl = AsyncHandler(async (req, res) => {
   const { email, password } = req.body;
   //checking if email exit
   const user = await Admin.findOne({ email });
- 
+
   if (!user) {
     return res.json({
       message: "Invalid Login crendetial",
     });
   }
-  //verifying password 
-  const isMatch = await verifyPassword(password,user.password);
-  console.log(isMatch)
-  if(!isMatch){
-    return res.json({message :"Invalid Credential"})
-  }
-   else {
+  //verifying password
+  const isMatch = await verifyPassword(password, user.password);
+  console.log(isMatch);
+  if (!isMatch) {
+    return res.json({ message: "Invalid Credential" });
+  } else {
     return res.json({
       data: generateToken(user._id),
-      message : "Admin Logged successfully"
+      message: "Admin Logged successfully",
     });
-  } 
+  }
 });
 
 //Desc Get Admins  controller
@@ -72,9 +71,11 @@ exports.getAdmins = AsyncHandler(async (req, res) => {
 //@access Private
 exports.getAdminProfile = AsyncHandler(async (req, res) => {
   //console.log(req.useAuth);
-  const user = await Admin.findById(req.useAuth._id).select(
-    "-password -createdAt -updatedAt"
-  ).populate("academicYears").populate("academicTerms");
+  const user = await Admin.findById(req.useAuth._id)
+    .select("-password -createdAt -updatedAt")
+    .populate("academicYears")
+    .populate("academicTerms")
+    .populate("classLevels");
   if (!user) {
     res.status(404).json({
       message: "Admin Not found",
@@ -106,7 +107,7 @@ exports.updateAdmin = AsyncHandler(async (req, res) => {
       {
         email,
         name,
-        password : await hashPassword(password),
+        password: await hashPassword(password),
       },
       {
         new: true,

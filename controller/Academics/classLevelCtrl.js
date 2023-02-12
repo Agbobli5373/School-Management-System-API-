@@ -21,7 +21,7 @@ exports.createClassLevelCtrl =( AsyncHandler (async (req,res)=>{
     const admin = await findById(req.useAuth._id);
     admin.ClassLevel.push(createdClassLevel);
     await admin.save ;
-    
+
     res.status(201).json({
         status : "Success",
         message : "Class Level Created Successfull",
@@ -33,7 +33,7 @@ exports.createClassLevelCtrl =( AsyncHandler (async (req,res)=>{
 //@Route GET api/v1/class-levels/:id
 //@Access Private
 exports.getClassLevelCtrl =( AsyncHandler (async (req,res)=>{
-    const classLevel = await ClassLevel.find();
+    const classLevel = await ClassLevel.findById(req.params.id);
     res.status(200).json({
         status : "Success",
         message : "Get single Class Level Successfull",
@@ -45,10 +45,11 @@ exports.getClassLevelCtrl =( AsyncHandler (async (req,res)=>{
 //@Route GET api/v1/class-levels/
 //@Access Private
 exports.getClassLevelsCtrl =( AsyncHandler (async (req,res)=>{
+    const classLevels = await ClassLevel.find();
     res.status(200).json({
         status : "Success",
         message : "Get All Class Level Successfull",
-        data : ""
+        data : classLevels
     })
 }))
 
@@ -56,10 +57,31 @@ exports.getClassLevelsCtrl =( AsyncHandler (async (req,res)=>{
 //@Route PUT api/v1/class-levels/:id
 //@Access Private
 exports.updateClassLevelCtrl =( AsyncHandler (async (req,res)=>{
+    const {name,description} = req.body ;
+    const classLevelExit = await ClassLevel.findOne({name});
+    if(classLevelExit){
+        throw new Error("Class Leve Name Alredy exit");
+    }
+
+    const isFound = await ClassLevel.findById(req.params.id) ;
+    if(!isFound){
+        throw new Error("Class level your update is not Found");
+    }
+
+    const updatedClassLvel = await ClassLevel.findByIdAndUpdate(req.params.id,
+        {
+            name,
+            description,
+            createdBy : useAuth._id
+            
+        },
+        {
+            new : true
+        })
     res.status(200).json({
         status : "Success",
         message : "Updated Class Level Successfull",
-        data : ""
+        data : updatedClassLvel
     })
 }))
 
@@ -67,6 +89,11 @@ exports.updateClassLevelCtrl =( AsyncHandler (async (req,res)=>{
 //@Route DELETE api/v1/class-levels/:id
 //@Access Private
 exports.deleteClassLevelCtrl =( AsyncHandler (async (req,res)=>{
+    const isFound = await ClassLevel.findById(req.params.id) ;
+    if(!isFound){
+        throw new Error("Class level your update is not Found");
+    }
+    const deletedClassLevel = await ClassLevel.findByIdAndDelete(req.params.id);
     res.status(200).json({
         status : "Success",
         message : "Delete Class Level Successfull"
