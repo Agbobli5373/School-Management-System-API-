@@ -1,7 +1,8 @@
 const YearGroup = require("../../model/Academics/YearGroup");
 const Admin = require("../../model/Staff/Admin");
-const Program = require("../../model/Academics/Program");
+const AcademicYear = require("../../model/Academics/AcademicYear");
 const AsyncHandler = require("express-async-handler");
+
 
 //@Desc Create Year Group
 //@Route POST api/v1/year-groups/
@@ -12,15 +13,19 @@ exports.createYearGroupCtrl = AsyncHandler(async (req, res) => {
   if(YearGroupExit){
     throw new Error("Year group Exit Already");
   } 
+  const academicYearFound = await AcademicYear.findOne({academicYear}) ;
+  if(academicYearFound){
+    throw new Error("Academic Year do not found");
+  } 
   const createdYearGroup = await YearGroup.create({
     name,
     academicYear,
     createdBy: req.useAuth._id
   })
   //push admin year group to admin model
-  const admin = Admin.findById(req,useAthu._id);
+  const admin = await Admin.findById(req.useAuth._id);
   admin.yearGroups.push(createdYearGroup);
-  admin.save();
+  await admin.save();
 
   res.status(201).json({
     status: "Success",
@@ -82,7 +87,7 @@ exports.updateYearGroupCtrl = AsyncHandler(async (req, res) => {
 exports.deleteYearGroupCtrl = AsyncHandler(async (req, res) => {
     const YearGroupFound = await YearGroup.findById(req.params.id) ;
     if(!YearGroupFound){
-      throw new Error("Year group updating doesn't exit");
+      throw new Error("Year group deleting doesn't exit");
     } 
     const deletedYearGroup = await YearGroup.findByIdAndDelete(req.params.id)
     res.status(201).json({
