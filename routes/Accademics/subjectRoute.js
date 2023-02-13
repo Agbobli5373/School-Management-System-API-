@@ -12,8 +12,11 @@ const {
 const subjectRouter = express.Router();
 
 subjectRouter
+  .route("/:programID")
+  .post(isLogin, isAdmin, createSubjectCtrl) ;
+
+subjectRouter
   .route("/")
-  .post(isLogin, isAdmin, createSubjectCtrl)
   .get(isLogin, isAdmin, getSubjectsCtrl);
 
 subjectRouter.route("/:id")

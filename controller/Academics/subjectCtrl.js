@@ -1,26 +1,32 @@
 const Subject = require("../../model/Academics/Subject");
 const Admin = require("../../model/Staff/Admin");
+const Program = require("../../model/Academics/Program");
 const AsyncHandler = require("express-async-handler");
 
 //@Desc Create Subject
-//@Route POST api/v1/Subjects
+//@Route POST api/v1/subjects/programID
 //@Access Private
 exports.createSubjectCtrl = AsyncHandler(async (req, res) => {
-  const { name, description } = req.body;
+  const { name, description, academicTerm } = req.body;
   const subjectExit = await Subject.findOne({ name });
   if (subjectExit) {
     throw new Error("Subject Already Exit");
   }
+  const programExit = await Program.findById(req.params.programID);
+  if (!programExit) {
+    throw new Error("Program is not Found");
+  }
   const createdSubject = await Subject.create({
     name,
     description,
+    academicTerm,
     createdBy: req.useAuth._id,
   });
 
-  //pushing Subjects to admin model
-  const admin = await Admin.findById(req.useAuth._id);
-  admin.subjects.push(createdSubject);
-  await admin.save();
+  //pushing Subjects to program
+  const program = await Program.findById(req.params.programID);
+  program.subjects.push(createdSubject);
+  await program.save();
 
   res.status(201).json({
     status: "Success",
@@ -34,6 +40,9 @@ exports.createSubjectCtrl = AsyncHandler(async (req, res) => {
 //@Access Private
 exports.getSubjectCtrl = AsyncHandler(async (req, res) => {
   const subject = await Subject.findById(req.params.id);
+  if(!subject){
+    throw new Error("Subject Not Found")
+  }
   res.status(200).json({
     status: "Success",
     message: " Get Single Subject Successfull",
@@ -57,9 +66,9 @@ exports.getSubjectsCtrl = AsyncHandler(async (req, res) => {
 //@Route PUT api/v1/Subjects
 //@Access Private
 exports.updateSubjectCtrl = AsyncHandler(async (req, res) => {
-  const { name, description } = req.body;
+  const { name, description,academicTerm } = req.body;
 
-  const SubjectExit = await Subject.findOne({ name });
+  const subjectExit = await Subject.findOne({ name });
   if (subjectExit) {
     throw new Error("Subject Already Exit");
   }
@@ -74,6 +83,7 @@ exports.updateSubjectCtrl = AsyncHandler(async (req, res) => {
     {
       name,
       description,
+      academicTerm,
       createdBy: req.useAuth._id,
     },
     {
