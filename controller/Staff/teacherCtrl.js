@@ -93,3 +93,30 @@ exports.getTeacherProfile = AsyncHandler(async (req, res) => {
     data: teacher,
   });
 });
+
+//@Desc Update Teacher profile
+//@Route PUT /api/v1/teachers
+//Access Private
+exports.updateTeacherCtrl = AsyncHandler(async (req, res) => {
+  const { name, email, password } = req.body;
+  const teacherExit = await Teacher.findOne({ email });
+  if (teacherExit) {
+    throw new Error("The email exit already");
+  }
+  const updatedTeacher = await Teacher.findByIdAndUpdate(
+    req.useAuth,
+    {
+      name,
+      email,
+      password: hashPassword(password),
+    },
+    {
+      new: true,
+    }
+  );
+  res.status(200).json({
+    status: "Success",
+    message: "Teacher Update Successsfull",
+    data: updatedTeacher,
+  });
+});
