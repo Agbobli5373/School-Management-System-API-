@@ -23,7 +23,7 @@ exports.adminRegisterTeacher = AsyncHandler(async (req, res) => {
   res.status(201).json({
     status: "Sucess",
     message: "Teacher created Successful",
-    data: createdTeacher
+    data: createdTeacher,
   });
 });
 
@@ -53,29 +53,43 @@ exports.teacherLoginCtrl = AsyncHandler(async (req, res) => {
   }
 });
 
-
 //@Desc Admin Fetch Single Teacher
 //@Route GET /api/v1/teachers/admin/:teacherID
 //Access Private
-exports.adminGetTeacherCtrl = (AsyncHandler(async (req,res)=>{
-      const teacher = await Teacher.findById(req.params.teacherID);
-      res.status(200).json({
-        status: "Success",
-        message : "Admin Fetch Single Teacher Successfull",
-        data : teacher
-      });
-}));
+exports.adminGetTeacherCtrl = AsyncHandler(async (req, res) => {
+  const teacher = await Teacher.findById(req.params.teacherID);
+  res.status(200).json({
+    status: "Success",
+    message: "Admin Fetch Single Teacher Successfull",
+    data: teacher,
+  });
+});
 
 //@Desc Admin Fetch All Teachers
 //@Route GET /api/v1/teachers/admin/
 //Access Private
-exports.adminGetTeachersCtrl = (AsyncHandler(async (req,res)=>{
+exports.adminGetTeachersCtrl = AsyncHandler(async (req, res) => {
   const teachers = await Teacher.find();
   res.status(200).json({
     status: "Success",
-    message : "Admin Fetch All Teachers Successfull",
-    data : teachers
+    message: "Admin Fetch All Teachers Successfull",
+    data: teachers,
   });
-}));
+});
 
-
+//@Desc Get Teacher profile
+//@Route GET /api/v1/teachers/profile
+//Access Private
+exports.getTeacherProfile = AsyncHandler(async (req, res) => {
+  const teacher = await Teacher.findById(req.useAuth._id).select(
+    "-password -createdAt -updatedAt"
+  );
+  if (!teacher) {
+    throw new Error("No teacher Found");
+  }
+  res.status(200).json({
+    status: "Succes",
+    message: "Teacher Profile Fetch Successfull",
+    data: teacher,
+  });
+});

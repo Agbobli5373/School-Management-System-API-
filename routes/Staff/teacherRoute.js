@@ -1,8 +1,10 @@
 const express = require("express") ;
 const isLogin = require("../../middlewares/isLogin");
 const isAdmin = require("../../middlewares/isAdmin");
+const isTeacherLogin = require("../../middlewares/isTeacherLogin");
+const isTeacher = require("../../middlewares/isTeacher");
 
-const {adminRegisterTeacher,adminGetTeacherCtrl,adminGetTeachersCtrl,teacherLoginCtrl} = require("../../controller/Staff/teacherCtrl");
+const {adminRegisterTeacher,adminGetTeacherCtrl,adminGetTeachersCtrl,teacherLoginCtrl, getTeacherProfile} = require("../../controller/Staff/teacherCtrl");
 
 const teacherRoute = express.Router();
 
@@ -15,5 +17,7 @@ teacherRoute.get("/admin",isLogin,isAdmin, adminGetTeachersCtrl);
 
 //Teacher login
 teacherRoute.post("/login",teacherLoginCtrl);
+//Teacher Profile
+teacherRoute.get("/",isTeacherLogin,isTeacher, getTeacherProfile);
 
 module.exports = teacherRoute ;
