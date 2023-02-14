@@ -60,6 +60,48 @@ exports.createExamCtrl = AsyncHandler(async (req, res) => {
   res.status(201).json({
     status: "Success",
     message: "Exam Created Successfull",
-    data: createdExam
+    data: createdExam,
   });
+});
+
+//@Descs Fetching single exam
+//@Route GET /api/v1/exams/:examID
+//@Access Private
+exports.getExamCtrl = AsyncHandler(async (req, res) => {
+  const exam = await Exam.findById(req.params.examId);
+  if (!exam) {
+    throw new Error("Exam not Found");
+  }
+  res.status(200).json({
+    status: "Success",
+    message: "Single Exam fetch Successfull",
+    data: exam,
+  });
+});
+
+//@Descs Fetching All  exam
+//@Route GET /api/v1/exams
+//@Access Private
+exports.getExamsCtrl = AsyncHandler(async (req, res) => {
+  const exams = await Exam.findB();
+  res.status(200).json({
+    status: "Success",
+    message: "All Exam fetch Successfull",
+    data: exams,
+  });
+});
+
+//@Descs Delete exam
+//@Route DELETE /api/v1/exams
+//@Access Private
+exports.deleteExamCtrl = AsyncHandler(async (req, res) => {
+  const deleteExam = await Exam.findByIdAndDelete(req.params.examID);
+  if (deleteExam) {
+    res.status(200).json({
+      status: "Success",
+      message: "Exam deleted successfull",
+    });
+  } else {
+    throw new Error("Exam not Found");
+  }
 });
