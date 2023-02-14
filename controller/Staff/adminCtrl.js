@@ -102,23 +102,42 @@ exports.updateAdmin = AsyncHandler(async (req, res) => {
   if (emailExit) {
     throw new Error("Email already taken");
   } else {
-    const admin = await Admin.findByIdAndUpdate(
-      req.useAuth._id,
-      {
-        email,
-        name,
-        password: await hashPassword(password),
-      },
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
-    res.status(200).json({
-      status: "success",
-      message: "Admin Updated Successfull",
-      data: admin,
-    });
+    if (password) {
+      const admin = await Admin.findByIdAndUpdate(
+        req.useAuth._id,
+        {
+          email,
+          name,
+          password: await hashPassword(password),
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+      res.status(200).json({
+        status: "success",
+        message: "Admin Updated Successfull",
+        data: admin,
+      });
+    } else {
+      const admin = await Admin.findByIdAndUpdate(
+        req.useAuth._id,
+        {
+          email,
+          name,
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+      res.status(200).json({
+        status: "success",
+        message: "Admin Updated Successfull",
+        data: admin,
+      });
+    }
   }
 });
 //Desc Delete Admin  controller

@@ -67,7 +67,7 @@ exports.adminGetTeacherCtrl = AsyncHandler(async (req, res) => {
 
 //@Desc Admin Fetch All Teachers
 //@Route GET /api/v1/teachers/admin/
-//Access Private
+//Access Private Admin
 exports.adminGetTeachersCtrl = AsyncHandler(async (req, res) => {
   const teachers = await Teacher.find();
   res.status(200).json({
@@ -79,7 +79,7 @@ exports.adminGetTeachersCtrl = AsyncHandler(async (req, res) => {
 
 //@Desc Get Teacher profile
 //@Route GET /api/v1/teachers/profile
-//Access Private
+//Access Private teacher Only
 exports.getTeacherProfile = AsyncHandler(async (req, res) => {
   const teacher = await Teacher.findById(req.useAuth._id).select(
     "-password -createdAt -updatedAt"
@@ -96,27 +96,45 @@ exports.getTeacherProfile = AsyncHandler(async (req, res) => {
 
 //@Desc Update Teacher profile
 //@Route PUT /api/v1/teachers
-//Access Private
+//Access Private teacher Only
 exports.updateTeacherCtrl = AsyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
   const teacherExit = await Teacher.findOne({ email });
   if (teacherExit) {
     throw new Error("The email exit already");
   }
-  const updatedTeacher = await Teacher.findByIdAndUpdate(
-    req.useAuth,
-    {
-      name,
-      email,
-      password: hashPassword(password),
-    },
-    {
-      new: true,
-    }
-  );
-  res.status(200).json({
-    status: "Success",
-    message: "Teacher Update Successsfull",
-    data: updatedTeacher,
-  });
+  if (password) {
+    const updatedTeacher = await Teacher.findByIdAndUpdate(
+      req.useAuth,
+      {
+        name,
+        email,
+        password: await hashPassword(password),
+      },
+      {
+        new: true,
+      }
+    );
+    res.status(200).json({
+      status: "Success",
+      message: "Teacher Update Successsfull",
+      data: updatedTeacher,
+    });
+  } else {
+    const updatedTeacher = await Teacher.findByIdAndUpdate(
+      req.useAuth,
+      {
+        name,
+        email,
+      },
+      {
+        new: true,
+      }
+    );
+    res.status(200).json({
+      status: "Success",
+      message: "Teacher Update Successsfull",
+      data: updatedTeacher,
+    });
+  }
 });
