@@ -54,3 +54,28 @@ exports.teacherLoginCtrl = AsyncHandler(async (req, res) => {
 });
 
 
+//@Desc Admin Fetch Single Teacher
+//@Route GET /api/v1/teachers/admin/:teacherID
+//Access Private
+exports.adminGetTeacherCtrl = (AsyncHandler(async (req,res)=>{
+      const teacher = await Teacher.findById(req.params.teacherID);
+      res.status(200).json({
+        status: "Success",
+        message : "Admin Fetch Single Teacher Successfull",
+        data : teacher
+      });
+}));
+
+//@Desc Admin Fetch All Teachers
+//@Route GET /api/v1/teachers/admin/
+//Access Private
+exports.adminGetTeachersCtrl = (AsyncHandler(async (req,res)=>{
+  const teachers = await Teacher.find();
+  res.status(200).json({
+    status: "Success",
+    message : "Admin Fetch All Teachers Successfull",
+    data : teachers
+  });
+}));
+
+
