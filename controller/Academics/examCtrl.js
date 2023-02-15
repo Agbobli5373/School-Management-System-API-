@@ -57,6 +57,11 @@ exports.createExamCtrl = AsyncHandler(async (req, res) => {
     academicYear: academicYearFound?._id,
     createdBy: req.useAuth._id,
   });
+  //push examID to teacher model
+  const teacher = Teacher.findById(req.useAuth._id);
+  await teacher.examsCreated.push(createdExam._id);
+  teacher.save();
+
   res.status(201).json({
     status: "Success",
     message: "Exam Created Successfull",
@@ -104,4 +109,72 @@ exports.deleteExamCtrl = AsyncHandler(async (req, res) => {
   } else {
     throw new Error("Exam not Found");
   }
+});
+
+//@Descs Updating of Exam
+//@Route PUT /api/v1/exams/:examID/update
+//@Access Private to Teacher
+exports.createExamCtrl = AsyncHandler(async (req, res) => {
+  const {
+    name,
+    description,
+    subject,
+    program,
+    academicTerm,
+    Examtime,
+    classLevel,
+    academicYear,
+  } = req.body;
+
+  const examExit = await Exam.findOne({ name });
+  if (examExit) {
+    throw new Error("Exam Already exit");
+  }
+  const subjectFound = await Subject.findOne({ subject });
+  if (!subjectFound) {
+    throw new Error("Subject not found");
+  }
+  const programFound = await Program.findOne({ program });
+  if (!programFound) {
+    throw new Error("Program not found");
+  }
+  const academicTermFound = await AcademicTerm.findOne({ academicTerm });
+  if (!academicTermFound) {
+    throw new Error("Academic Term not found");
+  }
+  const classLevelFound = await ClassLevel.findOne({ classLevel });
+  if (!classLevelFound) {
+    throw new Error("Class Level not found");
+  }
+  const academicYearFound = await AcademicYear.findOne({ academicYear });
+  if (!academicYearFound) {
+    throw new Error("Academic Year not found");
+  }
+  const updatedExam = await Exam.findByIdAndUpdate(
+    req.params.examID,
+    {
+      name,
+      description,
+      subject: subjectFound?._id,
+      program: programFound?._id,
+      academicTerm: academicTermFound?._id,
+      Examtime,
+      classLevel: classLevelFound?._id,
+      academicYear: academicYearFound?._id,
+      createdBy: req.useAuth._id,
+    },
+    {
+      new: true,
+    }
+  );
+  //push examID to teacher model
+  /* const teacher = Teacher.findById(req.useAuth._id);
+  await teacher.examsCreated.push(createdExam._id);
+  teacher.save(); */
+
+  res.status(201).json({
+    status: "Success",
+    message: "Exam Created Successfull",
+    data: updatedExam,
+  });
 });
