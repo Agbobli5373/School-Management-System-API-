@@ -53,3 +53,43 @@ exports.studentLoginCtl = AsyncHandler(async (req, res) => {
     });
   }
 });
+
+//@Desc Student profile
+//@Route GET api/v1/students/profile
+//@Access Private to student
+exports.studentProfileCtl = AsyncHandler(async (req, res) => {
+  const student = await Student.findById(req.useAuth._id);
+  if (student) {
+    res.status(200).json({
+      status: "Success",
+      data: student,
+    });
+  } else {
+    throw new Error(" Student profile not found");
+  }
+});
+
+//@Desc Get single Student
+//@Route GET api/v1/students/:studentID
+//@Access Private
+exports.getStudentCtl = AsyncHandler(async (req, res) => {
+  const student = await Student.findById(req.params.studentID);
+  if (student) {
+    res.status(200).json({
+      status: "Success",
+      data: student,
+    });
+  } else {
+    throw new Error(" Student profile not found");
+  }
+});
+//@Desc Get All student Student
+//@Route GET api/v1/students
+//@Access Private
+exports.getStudentsCtl = AsyncHandler(async (req, res) => {
+  const students = await Student.find();
+  res.status(200).json({
+    status: "Success",
+    data: students,
+  });
+});
