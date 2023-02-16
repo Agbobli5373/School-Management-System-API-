@@ -1,7 +1,8 @@
 const AsyncHandler = require("express-async-handller");
 const Student = require("../../model/Academics/Student");
 const Admin = require("../../model/Staff/Admin");
-const { hashPassword } = require("../../utils/helper");
+const { hashPassword, verifyPassword } = require("../../utils/helper");
+const verifyToken = require("../../utils/verifyToken");
 
 //@Desc Register Student
 //@Route POST /api/v1/students/admin/register
@@ -26,4 +27,29 @@ exports.registerStudentCtrl = AsyncHandler(async (req, res) => {
     message: "Student Created Successfull",
     data: createdStudent,
   });
+});
+
+//@Desc Student login
+//@Route POST api/v1/students/login
+//@Access Public
+exports.studentLoginCtl = AsyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  const student = await Student.findOne({ email });
+  if (!student) {
+    return res.status(500).json({
+      message: "Student not found",
+    });
+  }
+
+  const isMatch = await verifyPassword(password, student.password);
+  if (isMatch) {
+    res.status(200).json({
+      status: "Success",
+      data: verifyToken(student._id),
+    });
+  } else {
+    res.status(500).json({
+      message: "Invalid Login details",
+    });
+  }
 });
