@@ -88,7 +88,7 @@ exports.getExamCtrl = AsyncHandler(async (req, res) => {
 //@Route GET /api/v1/exams
 //@Access Private
 exports.getExamsCtrl = AsyncHandler(async (req, res) => {
-  const exams = await Exam.findB();
+  const exams = await Exam.find();
   res.status(200).json({
     status: "Success",
     message: "All Exam fetch Successfull",
@@ -114,7 +114,7 @@ exports.deleteExamCtrl = AsyncHandler(async (req, res) => {
 //@Descs Updating of Exam
 //@Route PUT /api/v1/exams/:examID/update
 //@Access Private to Teacher
-exports.createExamCtrl = AsyncHandler(async (req, res) => {
+exports.updateExamCtrl = AsyncHandler(async (req, res) => {
   const {
     name,
     description,

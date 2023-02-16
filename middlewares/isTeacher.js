@@ -11,6 +11,7 @@ const isTeacher = async (req, res, next) => {
     }
     else{
         next(new Error('Access denied , Teacher only'))
+        console.log(req.useAuth);
     }
 
  };

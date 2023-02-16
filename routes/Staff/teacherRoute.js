@@ -25,7 +25,7 @@ teacherRoute.get("/admin", isLogin, isAdmin, adminGetTeachersCtrl);
 //Teacher login
 teacherRoute.post("/login", teacherLoginCtrl);
 //Teacher Profile
-teacherRoute.get("/", isTeacherLogin, isTeacher, getTeacherProfile);
+teacherRoute.get("/profile", isTeacherLogin, isTeacher, getTeacherProfile);
 //Teacher update
 teacherRoute.put("/", isTeacherLogin, isTeacher, updateTeacherCtrl);
 

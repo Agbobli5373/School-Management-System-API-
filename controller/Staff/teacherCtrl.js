@@ -39,16 +39,14 @@ exports.teacherLoginCtrl = AsyncHandler(async (req, res) => {
       message: "Invalid Login",
     });
   }
-  //verifying pasword
-  const isMatch = verifyPassword(password, Teacher.password);
-  if (isMatch) {
-    res.json({
-      status: "Success",
-      data: generateToken(Teacher._id),
-    });
+  const isMatch = await verifyPassword(password, user.password);
+  console.log(isMatch);
+  if (!isMatch) {
+    return res.json({ message: "Invalid Credential" });
   } else {
-    res.json({
-      message: "Invalid Login",
+    return res.json({
+      data: generateToken(user._id),
+      message: "Teacher Logged successfully",
     });
   }
 });
