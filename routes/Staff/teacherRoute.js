@@ -11,6 +11,7 @@ const {
   teacherLoginCtrl,
   getTeacherProfile,
   updateTeacherCtrl,
+  adminUpdateTeacherCtrl
 } = require("../../controller/Staff/teacherCtrl");
 
 const teacherRoute = express.Router();
@@ -21,6 +22,8 @@ teacherRoute.post("/admin/register", isLogin, isAdmin, adminRegisterTeacher);
 teacherRoute.get("/admin/:teacherID", isLogin, isAdmin, adminGetTeacherCtrl);
 //admin get all teachers
 teacherRoute.get("/admin", isLogin, isAdmin, adminGetTeachersCtrl);
+//Admin asigning role to teacher
+teacherRoute.put("/admin/:teacherID/update",isLogin,isAdmin,adminUpdateTeacherCtrl);
 
 //Teacher login
 teacherRoute.post("/login", teacherLoginCtrl);
@@ -28,5 +31,6 @@ teacherRoute.post("/login", teacherLoginCtrl);
 teacherRoute.get("/profile", isTeacherLogin, isTeacher, getTeacherProfile);
 //Teacher update
 teacherRoute.put("/", isTeacherLogin, isTeacher, updateTeacherCtrl);
+
 
 module.exports = teacherRoute;
