@@ -10,6 +10,7 @@ const subjectRouter = require("../routes/Accademics/subjectRoute");
 const yearGroupRouter = require("../routes/Accademics/yearGroupRoute");
 const teacherRoute = require("../routes/Staff/teacherRoute");
 const examRoute = require("../routes/Accademics/examRoute");
+const studentRouter = require("../routes/Accademics/studentRoute");
 const { errorHandler, notFound } = require("../middlewares/globalErrorHandler");
 
 const app = express();
@@ -41,6 +42,8 @@ app.use("/api/v1/year-groups/", yearGroupRouter) ;
 app.use("/api/v1/teachers/", teacherRoute);
 //Exam route
 app.use("/api/v1/exams/", examRoute);
+//Student route
+app.use("/api/v1/students/", studentRouter);
 //not found middleware
 app.use(notFound);
 

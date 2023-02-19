@@ -1,4 +1,4 @@
-const AsyncHandler = require("express-async-handller");
+const AsyncHandler = require("express-async-handler");
 const Student = require("../../model/Academics/Student");
 const Admin = require("../../model/Staff/Admin");
 const { hashPassword, verifyPassword } = require("../../utils/helper");
